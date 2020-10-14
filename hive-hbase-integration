@@ -1,0 +1,42 @@
+Open hive and hbase in a separate terminal:
+
+hive> creat database hbase_integrate;
+hive> use hbase_integarte;
+hive> create table hbasehivetab3(id int,name string,sal int,gen string,dno int,dname string,loc string)
+    >  stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > with serdeproperties("hbase.columns.mapping"=":key,e:name,e:sal,e:gen,e:dno,d:dname,d:loc")
+    > tblproperties("hbase.table.name"="hbasetab3");
+
+hbase(main):045:0> list
+TABLE                                                                                                                                  
+hbasehivetab1                                                                                                                          
+hbasetab3     
+
+hbase(main):046:0> put 'hbasetab3',101,'e:name','Blake'
+Took 0.0569 seconds                                                                                                                    
+hbase(main):047:0> put 'hbasetab3',101,'e:sal',10000
+Took 0.0264 seconds                                                                                                                    
+hbase(main):048:0> put 'hbasetab3',101,'e:gen','m'
+Took 0.0248 seconds                                                                                                                    
+hbase(main):049:0> put 'hbasetab3',101,'e:dno',11
+Took 0.0386 seconds                                                                                                                    
+hbase(main):050:0> put 'hbasetab3',101,'d:dname','mrkt'
+Took 0.0205 seconds                                                                                                                    
+hbase(main):051:0> put 'hbasetab3',101,'d:loc','hyd'
+Took 0.0589 seconds                                                                                                                    
+hbase(main):052:0> scan 'hbasetab3'
+ROW                                COLUMN+CELL                                                                                         
+ 101                               column=d:dname, timestamp=1602705263677, value=mrkt                                                 
+ 101                               column=d:loc, timestamp=1602705278261, value=hyd                                                    
+ 101                               column=e:dno, timestamp=1602705252984, value=11                                                     
+ 101                               column=e:gen, timestamp=1602705242377, value=m                                                      
+ 101                               column=e:name, timestamp=1602705206112, value=Blake                                                 
+ 101                               column=e:sal, timestamp=1602705222945, value=10000             
+
+
+FROM hive:----------------------------------------------------
+hive> select * from hbase_integration.hbasehivetab3;
+OK
+101	Blake	10000	m	11	mrkt	hyd
+Time taken: 4.985 seconds, Fetched: 1 row(s)
+ 
